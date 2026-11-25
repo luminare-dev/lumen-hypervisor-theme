@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Lumen theme</title>
+<style>
+:root { --bg: #F3F6FB; --card: #FFFFFF; --line: #D6DDEA; --text: #0A1224; --muted: #4F5B73; --accent: #1F47C4; --on: #FFFFFF; color-scheme: light dark; }
+@media (prefers-color-scheme: dark) { :root { --bg: #060B17; --card: #0F1A30; --line: #24345A; --text: #F3F6FB; --muted: #B7C1D3; --accent: #5BDFFF; --on: #0A1224; } }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 16px; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { width: min(440px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+h1 { margin: 0 0 4px; font-size: 1.3rem; }
+p { margin: 0 0 16px; color: var(--muted); }
+button { display: block; width: 100%; margin: 8px 0; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--line); background: transparent; color: var(--text); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+button.primary { background: var(--accent); color: var(--on); border-color: transparent; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+small { display: block; margin-top: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+    <h1>Lumen theme</h1>
+    <p>Choose the look of the web interface in this browser. The choice is stored in the same cookie the
+    Color Theme dialog uses, then the interface reloads.</p>
+    <button type="button" class="primary" data-theme="lumen-dark">Lumen Dark</button>
+    <button type="button" data-theme="lumen-light">Lumen Light</button>
+    <button type="button" data-theme="lumen-auto">Lumen, following the system setting</button>
+    <button type="button" data-theme="">Default theme</button>
+    <small>Installed by lumen-hypervisor-theme (MIT). Not affiliated with or endorsed by Proxmox Server Solutions GmbH.</small>
+</main>
+<script>
+document.querySelectorAll("button[data-theme]").forEach(function (b) {
+    b.addEventListener("click", function () {
+        var v = b.getAttribute("data-theme");
+        var secure = location.protocol === "https:" ? "; Secure" : "";
+        if (/^lumen-(dark|light|auto)$/.test(v)) {
+            document.cookie = "PVEThemeCookie=" + v + "; path=/; max-age=315360000; SameSite=Lax" + secure;
+        } else {
+            document.cookie = "PVEThemeCookie=; path=/; max-age=0; SameSite=Lax" + secure;
+        }
+        location.href = "/";
+    });
+});
+</script>
+</body>
+</html>
