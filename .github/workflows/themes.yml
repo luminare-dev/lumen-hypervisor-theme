@@ -1,0 +1,114 @@
+# Build every preset in every variant, check the shared code, the module/page parity, the
+# installer and the selector coverage against the pinned upstream dark theme, then render the
+# customizer's mock-up with the real theme files in Chromium (artifacts "themes" and
+# "screenshots"; the browser run also checks that the page writes the same CSS as the build).
+name: themes
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: themes-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    name: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Shared code matches shared.lock (offline and at the source commit)
+        run: python3 scripts/check_shared.py fetch
+
+      - name: dist/ and the customizer page are up to date
+        run: node scripts/build.mjs --check
+
+      - name: All presets, dark, light and auto
+        run: node scripts/build.mjs --all out
+
+      - name: Tests (parity, CSS checks, installer in a fake root)
+        run: python3 -m unittest tests.test_theme -v
+
+      - name: shellcheck install.sh
+        run: shellcheck install.sh
+
+      - name: Selector coverage against the toolkit's dark theme (pinned commit)
+        run: python3 scripts/coverage.py --fetch --min 90 --missing | tee coverage.txt
+
+      - name: Stylelint (syntax and duplicates)
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/stylelint.json" <<'JSON'
+          {"rules": {"block-no-empty": true, "declaration-block-no-duplicate-properties": true,
+                     "property-no-unknown": true, "selector-pseudo-element-no-unknown": true,
+                     "color-no-invalid-hex": true, "function-calc-no-unspaced-operator": true,
+                     "no-invalid-double-slash-comments": true}}
+          JSON
+          npx --yes stylelint@16.10.0 --config "$RUNNER_TEMP/stylelint.json" "src/structure.css" "out/*/*.css"
+
+      - name: Keep the themes
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: themes
+          path: |
+            out/
+            coverage.txt
+          if-no-files-found: error
+          retention-days: 30
+
+  screenshots:
+    name: screenshots
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Take the themes
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: themes
+          path: built
+
+      - name: Mock-up and customizer in Chromium (Playwright), browser parity
+        run: |
+          cd ci/playwright
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium >/dev/null
+          node screenshots.mjs "$GITHUB_WORKSPACE" "$GITHUB_WORKSPACE/built/out" "$GITHUB_WORKSPACE/screenshots"
+
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: screenshots
+          path: screenshots/
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,0 +1,8 @@
+{
+    "name": "lumen-ci-screenshots",
+    "private": true,
+    "description": "CI only: Playwright for the customizer screenshots and the browser parity check (ci/playwright/screenshots.mjs).",
+    "dependencies": {
+        "playwright": "1.49.1"
+    }
+}
