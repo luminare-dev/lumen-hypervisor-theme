@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+# Local build output (dist/ holds the committed Luminare build)
+/out/
+/screenshots/
+# Local tool installs
+node_modules/
+# Never commit environment files
+.env
+.env.*
+_site/

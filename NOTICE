@@ -1,0 +1,41 @@
+Lumen hypervisor theme
+Copyright 2026 Paul Pasaurek
+
+The source code in this repository is licensed under MIT (see the
+LICENSE file). That licence covers the code only.
+
+The names "Luminare Development" and "Luminare", the Luminare logo and mark,
+the name and logo of this project, the README header images, the social
+preview image and all files in docs/brand/, as well as the screenshots in
+docs/screenshots/, are not licensed under MIT or under any other licence in
+this repository. No permission is granted to use them, except as required for
+reasonable and customary use in describing the origin of the work and
+reproducing the content of this NOTICE file. The theme files contain no
+Luminare logo.
+
+The images in docs/brand/ contain text set in the Sora typeface, converted to
+outlines. Sora is Copyright 2019 The Sora Project Authors and is licensed
+under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+src/fonts/lumen-sora.woff and dist/lumen-sora.woff are that font, unchanged
+except for the WOFF container, distributed under the same licence
+(src/fonts/Sora-OFL.txt); they keep their own licence.
+
+Shared token code
+src/core.ts and src/presets/ are copies of files from lumen-hydrodactyl-theme
+(Apache-2.0, same author), kept in sync through shared.lock. They are made
+available here under MIT by their author.
+
+Proxmox VE
+The theme files are written for this project. They contain no code or CSS
+from Proxmox VE, proxmox-widget-toolkit or pve-manager (AGPL-3.0); the
+toolkit's own dark theme was read only to learn which ExtJS selectors a theme
+has to cover. The installer copies the theme files into the toolkit's themes
+directory and, only with --register, adds three entries to the theme list in
+the installed proxmoxlib.js; that patch is a modification of an AGPL-3.0 file
+on your node, whose source is available from Proxmox
+(https://git.proxmox.com). The screenshots in docs/screenshots/ show a mock-up
+with invented data, not the Proxmox VE interface itself.
+
+Not affiliated with or endorsed by Proxmox Server Solutions GmbH. Proxmox and
+Proxmox VE are named only to describe what the theme works with; Proxmox is a
+registered trademark of Proxmox Server Solutions GmbH.

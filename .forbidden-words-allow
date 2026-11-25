@@ -1,0 +1,14 @@
+# Allowlist for scripts/forbidden_words.py: one entry per line, "path-glob | term | reason".
+# * "@name" as the path covers the name check (repository, package and README title names).
+# * Every entry needs a reason a reviewer can check. Scope entries to data or UI files, or to the
+#   one domain the project really links to. A funding file can never be allowlisted.
+# * Unused entries are reported as warnings; delete them.
+scripts/forbidden_words.py | * | the check's own rule list, its documentation and the usage examples
+tests/test_forbidden_words.py | * | test sentences that must trigger the rules
+tests/test_check_pr_title.py | * | test titles that must be rejected for their wording
+scripts/set_byline.py | placeholder | prints the names of the placeholders to fill again after a brand swap
+LICENSE | sell | the licence grants the right to "sell copies" of the software
+src/fonts/Sora-OFL.txt | sell | the unchanged SIL Open Font License text of the bundled Sora font (it forbids selling the font by itself)
+src/fonts/Sora-OFL.txt | scripts.sil.org | the licence's own reference URL in the unchanged OFL text
+customizer/index.html | sell | the page embeds the unchanged OFL text of the bundled Sora font for its ZIP download
+customizer/index.html | scripts.sil.org | the licence's own reference URL in the embedded, unchanged OFL text
