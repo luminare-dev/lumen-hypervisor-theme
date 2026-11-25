@@ -222,7 +222,8 @@ body { font: 13px/1.4 helvetica, arial, sans-serif; color: #000; background: #ff
 .x-grid-header-ct { display: flex; border-bottom: 1px solid #cfcfcf; background: #fff; }
 .x-column-header { padding: 7px 10px; border-right: 1px solid #cfcfcf; font-weight: 600; flex: none; white-space: nowrap; overflow: hidden; }
 .x-grid-view { overflow: hidden; }
-table.x-grid-item { width: 100%; border-collapse: collapse; table-layout: fixed; border-bottom: 1px solid #ededed; }
+table.x-grid-item { width: 100%; border-collapse: collapse; table-layout: fixed; border: 0 solid #ededed; }
+.x-grid-with-row-lines table.x-grid-item { border-bottom-width: 1px; }
 .x-grid-cell { padding: 0; overflow: hidden; }
 .x-grid-cell-inner { padding: 5px 10px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .x-grid-item-selected { background: #c2ddf2; }
@@ -365,7 +366,7 @@ body[data-scene="create"] .m-scene-summary, body[data-scene="login"] .m-scene-su
         opt = opt || {};
         var head = '<div class="x-grid-header-ct x-grid-header-ct-default">' + cols.map(function (c, i) {
             var sort = opt.sort === i ? " x-column-header-sort-ASC" : "";
-            return '<div class="x-column-header x-column-header-default' + sort + '" style="width:' + c[1] + '"><span class="x-column-header-text"><span class="x-column-header-text-inner">' + esc(c[0]) + "</span></span></div>";
+            return '<div class="x-column-header x-column-header-default' + sort + '" style="' + (c[1] === "auto" ? "flex:1" : "width:" + c[1]) + '"><span class="x-column-header-text"><span class="x-column-header-text-inner">' + esc(c[0]) + "</span></span></div>";
         }).join("") + "</div>";
         var body = rows.map(function (r, n) {
             var cls = "x-grid-item" + (n % 2 ? " x-grid-item-alt" : "") + (opt.selected === n ? " x-grid-item-selected" : "") + (opt.over === n ? " x-grid-item-over" : "") + (r.cls ? " " + r.cls : "");
@@ -477,15 +478,15 @@ body[data-scene="create"] .m-scene-summary, body[data-scene="login"] .m-scene-su
             '<div class="x-tab x-tab-default x-tab-default-top x-tab-active"><span class="x-tab-inner x-tab-inner-default">Tasks</span></div>' +
             '<div class="x-tab x-tab-default x-tab-default-top"><span class="x-tab-inner x-tab-inner-default">Cluster log</span></div><div class="x-tab-bar-strip x-tab-bar-strip-default"></div></div>';
         return '<div class="m-south x-panel x-panel-default">' + tabs + '<div class="x-panel-body x-panel-body-default" style="display:flex;flex-direction:column">' +
-            grid([["Start Time", "160px"], ["End Time", "160px"], ["Node", "100px"], ["User name", "130px"], ["Description", "auto"], ["Status", "auto"]], rows, { sort: 0 }) + "</div></div>";
+            grid([["Start Time", "160px"], ["End Time", "160px"], ["Node", "100px"], ["User name", "130px"], ["Description", "auto"], ["Status", "auto"]], rows, { sort: 0, lines: true }) + "</div></div>";
     }
     function createWindow() {
         var tabs = ["General", "OS", "System", "Disks", "CPU", "Memory", "Network", "Confirm"].map(function (t, i) {
             return '<div class="x-tab x-tab-default x-tab-default-top' + (i === 0 ? " x-tab-active" : "") + (i > 0 ? " x-tab-disabled" : "") + '"><span class="x-tab-inner x-tab-inner-default">' + t + "</span></div>";
         }).join("");
-        var list = '<div class="x-boundlist x-boundlist-default x-css-shadow" style="left:612px;top:357px;width:265px">' +
+        var list = '<div class="x-boundlist x-boundlist-default x-css-shadow" style="left:495px;top:373px;width:216px">' +
             ['<div class="x-boundlist-item">(none)</div>', '<div class="x-boundlist-item x-boundlist-selected">lab</div>', '<div class="x-boundlist-item x-boundlist-item-over">customers</div>', '<div class="x-boundlist-item">ci</div>'].join("") + "</div>";
-        return '<div class="x-mask"></div><div class="x-window x-window-default x-css-shadow" style="left:360px;top:150px;width:720px;height:520px">' +
+        return '<div class="x-mask"></div><div class="x-window x-window-default x-css-shadow" style="left:360px;top:150px;width:720px;height:440px">' +
             '<div class="x-window-header x-window-header-default"><div class="x-window-header-title x-window-header-title-default"><span class="x-title-text">Create: Virtual Machine</span></div><div class="x-tool"><div class="x-tool-img x-tool-close"></div></div></div>' +
             '<div class="x-tab-bar x-tab-bar-default">' + tabs + '<div class="x-tab-bar-strip x-tab-bar-strip-default"></div></div>' +
             '<div class="x-window-body x-window-body-default"><div style="display:grid;grid-template-columns:1fr 1fr;gap:0 18px">' +
@@ -493,7 +494,7 @@ body[data-scene="create"] .m-scene-summary, body[data-scene="login"] .m-scene-su
             '<div><div class="x-fieldset x-fieldset-default"><div class="x-fieldset-header-text">Boot</div>' + checkbox("Start at boot", true) + checkbox("Start after created", false) + textField("Start/Shutdown order", "", { placeholder: "any" }) + "</div>" +
             textField("Tags", "web, prod", {}) + textField("Hostname", "web_02", { invalid: true }) + "</div></div></div>" +
             '<div class="x-toolbar x-toolbar-footer x-toolbar-default x-docked-bottom">' + btn("Help", { icon: "help" }) + '<span style="flex:1"></span>' + checkbox("Advanced", true) + btn("Back", { state: "x-btn-disabled" }) + btn("Next", { primary: true }) + "</div></div>" + list +
-            '<div class="x-tip x-tip-form-invalid x-css-shadow" style="left:1092px;top:300px;width:230px"><div class="x-tip-body x-tip-body-form-invalid">This is not a valid DNS name.</div></div>';
+            '<div class="x-tip x-tip-form-invalid x-css-shadow" style="left:1072px;top:420px;width:230px"><div class="x-tip-body x-tip-body-form-invalid">This is not a valid DNS name.</div></div>';
     }
     function loginWindow() {
         return '<div class="x-mask"></div><div class="x-window x-window-default x-css-shadow" style="left:520px;top:250px;width:400px">' +
